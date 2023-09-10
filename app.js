@@ -56,21 +56,38 @@ app.get('/books',(req,res)=>{
     })
 })
 
+// app.get('/books/:id',(req,res)=>{
+//     //req.params.id
+//     if(ObjectId.isValid(req.params.id)){
+//         db.collection('books')
+//         .findOne({_id: new ObjectId(req.params.id)})
+//         .then(doc =>{
+//             res.status(200).json(doc)
+//         })
+//         .catch(err =>{
+//             res.status(500).json({error:'Bye'})
+//         })
+//     }
+//     else{
+//         res.status(500).json({error:'not valid id bro'})
+//     }
+// })
+
 app.get('/books/:id',(req,res)=>{
     //req.params.id
-    if(ObjectId.isValid(req.params.id)){
+        let ratedbook = []
         db.collection('books')
-        .findOne({_id: new ObjectId(req.params.id)})
-        .then(doc =>{
-            res.status(200).json(doc)
+        .find({rating: req.params.id})
+        .forEach(book=>{
+            console.log(book)
+            ratedbook.push(book)
+        })
+        .then(() =>{
+            res.status(200).json(ratedbook)
         })
         .catch(err =>{
-            res.status(500).json({error:'Bye'})
+            res.status(500).json({error:'Nhi hai vo rating ke'})
         })
-    }
-    else{
-        res.status(500).json({error:'not valid id bro'})
-    }
 })
 
 app.post('/books',(req,res)=>{
