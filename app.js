@@ -6,6 +6,24 @@ app.use(express.json())
   
 const {MongoClient,ObjectId} = require('mongodb')
 
+const fileUpload = require('express-fileupload')
+app.use(fileUpload({
+    useTempFiles:true
+}))
+
+// Require the cloudinary library
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name:'ddemruq3y',
+  api_key:'584821523663682',
+  api_secret:'vy0eTlXWPDWyML4aKFeChRQuBcA'
+});
+
+// Log the configuration
+console.log('cloudimnary config',cloudinary.config());
+
+
 let db;
 MongoClient.connect('mongodb://127.0.0.1:27017/bookstore')
 .then((client)=>{
@@ -68,4 +86,24 @@ app.post('/books',(req,res)=>{
   })
 
 })
+app.post('/',(req,res)=>{
+    const file = req.files.photo;
+    //const book = req.body
+    cloudinary.uploader.upload(file.tempFilePath,(err,result)=>{
+        console.log(result);
+        console.log("successfully uploaded")
+        db.collection('books').insertOne({
+            title:req.body.title,
+            author:req.body.author,
+            rating:req.body.rating,
+            imageurl:result.url})
+    })
+    .then(result=>{
+        console.log("added data to db")
+        res.status(201).json(result)
+      })
+      .catch(err=>{
+        res.status(500).json({err:"can't upload"})
+      })
+  })
 app.listen(3000)
