@@ -123,4 +123,37 @@ app.post('/',(req,res)=>{
         res.status(500).json({err:"can't upload"})
       })
   })
+
+  app.delete('/books/:id',(req,res)=>{
+    if(ObjectId.isValid(req.params.id)){
+        db.collection('books')
+        .deleteOne({_id: new ObjectId(req.params.id)})
+        .then(result =>{
+            res.status(200).json(result)
+        })
+        .catch(err =>{
+            res.status(500).json({error:'could not delete bro'})
+        })
+    }
+    else{
+        res.status(500).json({error:"Not a valid doc id"})
+    }
+  })
+
+   app.patch('/books/:id',(req,res)=>{
+    const updates = req.body
+    if(ObjectId.isValid(req.params.id)){
+        db.collection('books')
+        .updateOne({_id:new ObjectId(req.params.body)},{$set:updates})
+        .then(result =>{
+            res.status(200).json(result)
+        })
+        .catch(err =>{
+            res.status(500).json({error:"not updated br"})
+        })
+    }
+    else{
+        res.status(500).json({error:'Noot valid id bhai'})
+    }
+   })
 app.listen(3000)
